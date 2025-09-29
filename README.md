@@ -1,53 +1,46 @@
 # NDJSON to CSV Converter
 
-This is a Python script to convert very large NDJSON (.json or .json.gz) files into CSV.
-It can flatten nested objects and also explode list columns into multiple rows.
+Python script to convert large NDJSON (.json or .json.gz) files into CSV.  
+Supports flattening nested fields and exploding list columns. Works as a general tool for any NDJSON dataset.
 
 ## Features
-
-* Works with .json and .json.gz
-* Streams line by line (safe for multi-GB files)
-* Flatten nested fields into dotted columns (example: song.artist, song.track)
-* Optionally explode one list column into multiple rows
-* Progress logs while running
+- Streams line by line for multi-GB files
+- Works with .json and .json.gz
+- Flatten nested fields into dotted columns
+- Explode a single list column or explode all list columns (cartesian product)
+- Progress logs while running
 
 ## Usage
+Plain conversion  
+python convertJsonToCSV.py -i input.json -o output.csv
 
-Run the script with python. Required arguments are input and output paths.
+Flatten nested objects  
+python convertJsonToCSV.py -i input.json -o output.csv --flatten
 
-Examples:
+Explode a single list column (example: tags)  
+python convertJsonToCSV.py -i input.json -o output_exploded.csv --flatten --explode-column tags
 
-1. Plain conversion
-   python convertJsonToCSV.py -i full_dataset.json -o full_dataset.csv
+Explode all list columns (cartesian product)  
+python convertJsonToCSV.py -i input.json -o output_all_exploded.csv --flatten --explode-all
 
-2. Flatten nested objects
-   python convertJsonToCSV.py -i full_dataset.json -o full_dataset.csv --flatten
+Faster header discovery (scan first N lines)  
+python convertJsonToCSV.py -i input.json -o output.csv --flatten --discover-limit 200000
 
-3. Flatten and explode the tags column
-   python convertJsonToCSV.py -i full_dataset.json -o full_dataset_exploded.csv --flatten --explode-column tags
-
-4. Faster header discovery (scan only first 200k lines)
-   python convertJsonToCSV.py -i full_dataset.json -o full_dataset.csv --flatten --discover-limit 200000
-
-## How to test
-
-A small smoke test is included to check that the script works in plain, flatten, and explode modes.
-Run it from the project root with:
-
-python -m unittest tests/smoke_test.py
-
-If everything is correct, you will see the tests run and finish with OK.
-
----
+Compressed output (write .csv.gz by using .gz extension)  
+python convertJsonToCSV.py -i input.json -o output.csv.gz --flatten --explode-all
 
 ## Examples folder
-
-* run_plain.sh shows plain conversion
-* run_flatten.sh shows flattening
-* run_explode.sh shows flatten plus exploding a list column
+run_plain.sh shows plain conversion  
+run_flatten.sh shows flattening  
+run_explode.sh shows single column explode  
+run_explode_all.sh shows explode all list columns
 
 ## Sample data
+A small sample file exists at sample_data/sample.ndjson and sample_data/sample_multi.ndjson.
 
-A small sample file is included in sample_data/sample.ndjson. Running the example scripts will create CSV outputs there.
+## How to test
+Run the smoke test from project root  
+python -m unittest tests/smoke_test.py
 
----
+## Notes
+Exploding all list columns multiplies rows by the size of each list. Use with care on very large records.
