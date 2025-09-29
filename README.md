@@ -50,6 +50,4 @@ If everything is correct, you will see the tests run and finish with OK.
 
 A small sample file is included in sample_data/sample.ndjson. Running the example scripts will create CSV outputs there.
 
-Got it 👍 Here’s a simple **How to test** section you can add to the end of your README:
-
 ---
